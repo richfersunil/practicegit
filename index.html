@@ -15,19 +15,10 @@
       --border-hover: rgba(255, 255, 255, 0.25);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
-      --accent-sun: #f59e0b;
-      --accent-nebula: #6366f1;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       background-color: var(--bg-space);
@@ -37,11 +28,9 @@
       overflow-x: hidden;
     }
 
-    h1, h2, h3, .logo {
-      font-family: 'Space Grotesk', sans-serif;
-    }
+    h1, h2, h3, .logo { font-family: 'Space Grotesk', sans-serif; }
 
-    /* Animated Starfield Background */
+    /* Twinkling Starfield */
     .stars-container {
       position: fixed;
       inset: 0;
@@ -63,7 +52,6 @@
       50% { transform: scale(1.4); opacity: 1; }
     }
 
-    /* Ambient Nebula Glow */
     .nebula-glow {
       position: fixed;
       top: -15%;
@@ -125,11 +113,9 @@
       transition: color 0.2s ease;
     }
 
-    .nav-links a:hover {
-      color: #fff;
-    }
+    .nav-links a:hover { color: #fff; }
 
-    /* Hero Section + Live Orrery */
+    /* Hero Section */
     .hero {
       max-width: 1100px;
       margin: 2rem auto 4rem;
@@ -171,82 +157,143 @@
       color: var(--text-secondary);
       font-size: 1.1rem;
       max-width: 600px;
-      margin: 0 auto 2rem;
+      margin: 0 auto 1rem;
     }
 
-    /* Animated Solar System Orrery */
+    .hint-text {
+      font-size: 0.85rem;
+      color: #60a5fa;
+      margin-bottom: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* Interactive Animated Orrery */
     .orrery-wrapper {
       position: relative;
       width: 100%;
       max-width: 680px;
-      height: 440px;
-      margin: 1rem auto 3rem;
+      height: 460px;
+      margin: 0 auto 3rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+    }
+
+    /* Pause orbit when hovering a planet so it's easy to click */
+    .orrery-wrapper:has(.planet-node:hover) .orbit {
+      animation-play-state: paused;
     }
 
     .sun-core {
       position: absolute;
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #fffbeb, #fbbf24 45%, #ea580c 90%);
       box-shadow: 0 0 40px #f59e0b, 0 0 80px rgba(234, 88, 12, 0.6);
-      z-index: 10;
+      z-index: 20;
       animation: pulseSun 4s ease-in-out infinite;
     }
 
     @keyframes pulseSun {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 40px #f59e0b, 0 0 80px rgba(234, 88, 12, 0.6); }
-      50% { transform: scale(1.06); box-shadow: 0 0 55px #fbbf24, 0 0 100px rgba(234, 88, 12, 0.8); }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
     }
 
     .orbit {
       position: absolute;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 50%;
       animation: spinOrbit linear infinite;
+      pointer-events: none; /* Let clicks pass through ring to inner planets */
+      transition: border-color 0.25s ease;
     }
 
-    .orbit::after {
-      content: '';
+    .orbit:has(.planet-node:hover) {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Clickable Planet Node on the Orbit */
+    .planet-node {
       position: absolute;
       top: 50%;
       left: 0;
       transform: translate(-50%, -50%);
       border-radius: 50%;
+      pointer-events: auto;
+      cursor: pointer;
+      display: block;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+      z-index: 15;
     }
 
-    /* Individual Orbits & Planets */
-    .orbit-mercury { width: 86px; height: 86px; animation-duration: 6s; }
-    .orbit-mercury::after { width: 6px; height: 6px; background: #a8a29e; box-shadow: 0 0 6px #a8a29e; }
+    /* Invisible bigger hit-area so small planets are super easy to click */
+    .planet-node::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+    }
 
-    .orbit-venus { width: 124px; height: 124px; animation-duration: 10s; }
-    .orbit-venus::after { width: 9px; height: 9px; background: #fde047; box-shadow: 0 0 8px #fde047; }
+    /* Hover Tooltip showing planet name */
+    .planet-node::after {
+      content: attr(data-name);
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) scale(0.85);
+      background: rgba(15, 23, 42, 0.95);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
 
-    .orbit-earth { width: 168px; height: 168px; animation-duration: 15s; }
-    .orbit-earth::after { width: 10px; height: 10px; background: #38bdf8; box-shadow: 0 0 10px #38bdf8; }
+    .planet-node:hover {
+      transform: translate(-50%, -50%) scale(1.65);
+      z-index: 30;
+    }
 
-    .orbit-mars { width: 212px; height: 212px; animation-duration: 21s; }
-    .orbit-mars::after { width: 8px; height: 8px; background: #f87171; box-shadow: 0 0 8px #ef4444; }
+    .planet-node:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(0.65); /* Counter-scale so tooltip stays crisp */
+    }
 
-    .orbit-jupiter { width: 276px; height: 276px; animation-duration: 32s; }
-    .orbit-jupiter::after { width: 18px; height: 18px; background: linear-gradient(135deg, #fed7aa, #c2410c); box-shadow: 0 0 12px rgba(251, 146, 60, 0.6); }
+    /* Orbit sizes & planet styles */
+    .orbit-mercury { width: 90px; height: 90px; animation-duration: 7s; z-index: 9; }
+    .node-mercury { width: 8px; height: 8px; background: #a8a29e; box-shadow: 0 0 8px #a8a29e; }
 
-    .orbit-saturn { width: 340px; height: 340px; animation-duration: 44s; }
-    .orbit-saturn::after {
-      width: 15px; height: 15px;
+    .orbit-venus { width: 130px; height: 130px; animation-duration: 11s; z-index: 8; }
+    .node-venus { width: 11px; height: 11px; background: #fde047; box-shadow: 0 0 10px #fde047; }
+
+    .orbit-earth { width: 174px; height: 174px; animation-duration: 16s; z-index: 7; }
+    .node-earth { width: 12px; height: 12px; background: #38bdf8; box-shadow: 0 0 12px #38bdf8; }
+
+    .orbit-mars { width: 218px; height: 218px; animation-duration: 22s; z-index: 6; }
+    .node-mars { width: 10px; height: 10px; background: #f87171; box-shadow: 0 0 10px #ef4444; }
+
+    .orbit-jupiter { width: 282px; height: 282px; animation-duration: 34s; z-index: 5; }
+    .node-jupiter { width: 20px; height: 20px; background: linear-gradient(135deg, #fed7aa, #c2410c); box-shadow: 0 0 14px rgba(251, 146, 60, 0.7); }
+
+    .orbit-saturn { width: 346px; height: 346px; animation-duration: 46s; z-index: 4; }
+    .node-saturn {
+      width: 16px; height: 16px;
       background: #fde68a;
-      box-shadow: 0 0 0 3px rgba(3, 4, 10, 0.8), 0 0 0 5px rgba(253, 230, 138, 0.65);
+      box-shadow: 0 0 0 3px rgba(3, 4, 10, 0.85), 0 0 0 5px rgba(253, 230, 138, 0.7);
     }
 
-    .orbit-uranus { width: 394px; height: 394px; animation-duration: 58s; }
-    .orbit-uranus::after { width: 12px; height: 12px; background: #67e8f9; box-shadow: 0 0 10px #22d3ee; }
+    .orbit-uranus { width: 400px; height: 400px; animation-duration: 60s; z-index: 3; }
+    .node-uranus { width: 14px; height: 14px; background: #67e8f9; box-shadow: 0 0 12px #22d3ee; }
 
-    .orbit-neptune { width: 440px; height: 440px; animation-duration: 72s; }
-    .orbit-neptune::after { width: 12px; height: 12px; background: #60a5fa; box-shadow: 0 0 10px #3b82f6; }
+    .orbit-neptune { width: 448px; height: 448px; animation-duration: 74s; z-index: 2; }
+    .node-neptune { width: 14px; height: 14px; background: #60a5fa; box-shadow: 0 0 12px #3b82f6; }
 
     @keyframes spinOrbit {
       from { transform: rotate(0deg); }
@@ -256,7 +303,7 @@
     /* Section Headers */
     .section-header {
       max-width: 1200px;
-      margin: 4rem auto 2.5rem;
+      margin: 3rem auto 2.5rem;
       padding: 0 2rem;
       display: flex;
       justify-content: space-between;
@@ -287,6 +334,9 @@
     }
 
     .planet-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 24px;
@@ -329,7 +379,18 @@
       color: var(--text-secondary);
     }
 
-    /* Visual CSS Planets inside Cards */
+    .explore-arrow {
+      font-size: 0.8rem;
+      color: var(--tag-color);
+      font-weight: 600;
+      opacity: 0.85;
+      transition: transform 0.25s ease;
+    }
+
+    .planet-card:hover .explore-arrow {
+      transform: translateX(4px);
+    }
+
     .planet-sphere-wrap {
       height: 92px;
       display: flex;
@@ -347,16 +408,13 @@
       animation: floatPlanet 5s ease-in-out infinite;
     }
 
-    .planet-card:hover .sphere {
-      transform: scale(1.12) rotate(8deg);
-    }
+    .planet-card:hover .sphere { transform: scale(1.12) rotate(8deg); }
 
     @keyframes floatPlanet {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-6px); }
     }
 
-    /* Unique Planet Textures & Lighting */
     .sphere.mercury {
       background: radial-gradient(circle at 30% 30%, #e7e5e4, #78716c 60%, #1c1917 95%);
       box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8), 0 0 20px rgba(168, 162, 158, 0.25);
@@ -386,25 +444,21 @@
     }
 
     .sphere.jupiter {
-      width: 82px;
-      height: 82px;
+      width: 82px; height: 82px;
       background: linear-gradient(180deg, #fed7aa 0%, #c2410c 22%, #ffedd5 40%, #9a3412 62%, #fed7aa 80%, #7c2d12 100%);
       box-shadow: inset -14px -12px 24px rgba(0,0,0,0.85), 0 0 28px rgba(249, 115, 22, 0.3);
     }
 
     .sphere.saturn {
-      width: 70px;
-      height: 70px;
+      width: 70px; height: 70px;
       background: radial-gradient(circle at 30% 30%, #fef3c7, #d97706 65%, #451a03 95%);
       box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8), 0 0 25px rgba(245, 158, 11, 0.3);
     }
     .sphere.saturn::before {
       content: '';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 126px;
-      height: 34px;
+      top: 50%; left: 50%;
+      width: 126px; height: 34px;
       transform: translate(-50%, -50%) rotate(-22deg);
       border-radius: 50%;
       border: 6px solid rgba(253, 230, 138, 0.55);
@@ -421,10 +475,7 @@
       box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8), 0 0 26px rgba(59, 130, 246, 0.4);
     }
 
-    .planet-card h3 {
-      font-size: 1.45rem;
-      margin-bottom: 0.25rem;
-    }
+    .planet-card h3 { font-size: 1.45rem; margin-bottom: 0.25rem; }
 
     .planet-tagline {
       font-size: 0.8rem;
@@ -451,18 +502,9 @@
       font-size: 0.8rem;
     }
 
-    .stat-label {
-      color: var(--text-secondary);
-      display: block;
-      font-size: 0.72rem;
-    }
+    .stat-label { color: var(--text-secondary); display: block; font-size: 0.72rem; }
+    .stat-value { color: var(--text-primary); font-weight: 600; }
 
-    .stat-value {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    /* Footer */
     footer {
       max-width: 1200px;
       margin: 4rem auto 2rem;
@@ -485,12 +527,11 @@
 </head>
 <body>
 
-  <!-- Twinkling Starfield -->
   <div class="stars-container" id="starfield"></div>
   <div class="nebula-glow"></div>
 
   <nav>
-    <a href="#" class="logo">
+    <a href="index.html" class="logo">
       <span class="logo-sun"></span>
       SOLARIS
     </a>
@@ -504,19 +545,44 @@
     <section class="hero" id="orrery">
       <div class="badge">✦ Cosmic Atlas • 4.6 Billion Years Old</div>
       <h1>Explore Our<br><span class="gradient-text">Solar System</span></h1>
-      <p>Eight unique worlds bound by the gravity of a single star. Watch the planetary orbits in motion below and scroll down to uncover each world's story.</p>
+      <p>Eight unique worlds bound by the gravity of a single star. Hover over any orbiting planet to pause its path and click to enter its full dossier.</p>
+      <div class="hint-text">✨ Tip: Click any orbiting planet below to explore its deep-dive page</div>
 
-      <!-- Live Animated Orrery -->
-      <div class="orrery-wrapper" aria-label="Animated Solar System Orbits">
+      <!-- Interactive Animated Orrery -->
+      <div class="orrery-wrapper" aria-label="Interactive Solar System Orbits">
         <div class="sun-core" title="The Sun"></div>
-        <div class="orbit orbit-mercury"></div>
-        <div class="orbit orbit-venus"></div>
-        <div class="orbit orbit-earth"></div>
-        <div class="orbit orbit-mars"></div>
-        <div class="orbit orbit-jupiter"></div>
-        <div class="orbit orbit-saturn"></div>
-        <div class="orbit orbit-uranus"></div>
-        <div class="orbit orbit-neptune"></div>
+
+        <div class="orbit orbit-mercury">
+          <a href="planet.html?planet=mercury" class="planet-node node-mercury" data-name="Mercury →" aria-label="Explore Mercury"></a>
+        </div>
+
+        <div class="orbit orbit-venus">
+          <a href="planet.html?planet=venus" class="planet-node node-venus" data-name="Venus →" aria-label="Explore Venus"></a>
+        </div>
+
+        <div class="orbit orbit-earth">
+          <a href="planet.html?planet=earth" class="planet-node node-earth" data-name="Earth →" aria-label="Explore Earth"></a>
+        </div>
+
+        <div class="orbit orbit-mars">
+          <a href="planet.html?planet=mars" class="planet-node node-mars" data-name="Mars →" aria-label="Explore Mars"></a>
+        </div>
+
+        <div class="orbit orbit-jupiter">
+          <a href="planet.html?planet=jupiter" class="planet-node node-jupiter" data-name="Jupiter →" aria-label="Explore Jupiter"></a>
+        </div>
+
+        <div class="orbit orbit-saturn">
+          <a href="planet.html?planet=saturn" class="planet-node node-saturn" data-name="Saturn →" aria-label="Explore Saturn"></a>
+        </div>
+
+        <div class="orbit orbit-uranus">
+          <a href="planet.html?planet=uranus" class="planet-node node-uranus" data-name="Uranus →" aria-label="Explore Uranus"></a>
+        </div>
+
+        <div class="orbit orbit-neptune">
+          <a href="planet.html?planet=neptune" class="planet-node node-neptune" data-name="Neptune →" aria-label="Explore Neptune"></a>
+        </div>
       </div>
     </section>
 
@@ -524,208 +590,171 @@
       <div>
         <h2>Planetary Profiles</h2>
       </div>
-      <p>From scorched terrestrial rocks to swirling ice giants on the edge of interstellar space.</p>
+      <p>Select any planet card or orbiting world to inspect its atmosphere, moons, and fascinating cosmic facts.</p>
     </div>
 
     <section class="planets-grid">
       <!-- 1. Mercury -->
-      <article class="planet-card" style="--glow-color: rgba(168,162,158,0.2); --tag-color: #d6d3d1;">
+      <a href="planet.html?planet=mercury" class="planet-card" style="--glow-color: rgba(168,162,158,0.2); --tag-color: #d6d3d1;">
         <div class="planet-header">
           <span class="planet-order">01 • Terrestrial</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere mercury"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere mercury"></div></div>
         <h3>Mercury</h3>
         <span class="planet-tagline">The Swift Messenger</span>
-        <p>The smallest and innermost planet in the Solar System. With almost no atmosphere to trap heat, its cratered surface swings from scorching daytime highs to freezing nights.</p>
+        <p>The smallest and innermost planet in the Solar System. With almost no atmosphere to trap heat, its cratered surface swings from scorching highs to freezing nights.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Day Length</span>
-            <span class="stat-value">59 Earth Days</span>
-          </div>
-          <div>
-            <span class="stat-label">Avg Temp</span>
-            <span class="stat-value">167°C</span>
-          </div>
+          <div><span class="stat-label">Day Length</span><span class="stat-value">59 Earth Days</span></div>
+          <div><span class="stat-label">Avg Temp</span><span class="stat-value">167°C</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 2. Venus -->
-      <article class="planet-card" style="--glow-color: rgba(234,179,8,0.22); --tag-color: #fde047;">
+      <a href="planet.html?planet=venus" class="planet-card" style="--glow-color: rgba(234,179,8,0.22); --tag-color: #fde047;">
         <div class="planet-header">
           <span class="planet-order">02 • Terrestrial</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere venus"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere venus"></div></div>
         <h3>Venus</h3>
         <span class="planet-tagline">The Veiled Inferno</span>
         <p>Similar in size to Earth, Venus is wrapped in thick clouds of sulfuric acid that trap runaway greenhouse heat—making it the hottest planet in our cosmic neighborhood.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Spin Direction</span>
-            <span class="stat-value">Retrograde</span>
-          </div>
-          <div>
-            <span class="stat-label">Surface Temp</span>
-            <span class="stat-value">464°C</span>
-          </div>
+          <div><span class="stat-label">Spin Direction</span><span class="stat-value">Retrograde</span></div>
+          <div><span class="stat-label">Surface Temp</span><span class="stat-value">464°C</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 3. Earth -->
-      <article class="planet-card" style="--glow-color: rgba(56,189,248,0.25); --tag-color: #7dd3fc;">
+      <a href="planet.html?planet=earth" class="planet-card" style="--glow-color: rgba(56,189,248,0.25); --tag-color: #7dd3fc;">
         <div class="planet-header">
           <span class="planet-order">03 • Terrestrial</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere earth"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere earth"></div></div>
         <h3>Earth</h3>
         <span class="planet-tagline">The Blue Oasis</span>
         <p>Our home world and the only astronomical object known to harbor life. Liquid oceans cover 71% of its crust, shielded by a protective magnetic field and oxygen-rich sky.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Orbit Period</span>
-            <span class="stat-value">365.25 Days</span>
-          </div>
-          <div>
-            <span class="stat-label">Moons</span>
-            <span class="stat-value">1 (Luna)</span>
-          </div>
+          <div><span class="stat-label">Orbit Period</span><span class="stat-value">365.25 Days</span></div>
+          <div><span class="stat-label">Moons</span><span class="stat-value">1 (Luna)</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 4. Mars -->
-      <article class="planet-card" style="--glow-color: rgba(239,68,68,0.25); --tag-color: #fca5a5;">
+      <a href="planet.html?planet=mars" class="planet-card" style="--glow-color: rgba(239,68,68,0.25); --tag-color: #fca5a5;">
         <div class="planet-header">
           <span class="planet-order">04 • Terrestrial</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere mars"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere mars"></div></div>
         <h3>Mars</h3>
         <span class="planet-tagline">The Red Frontier</span>
         <p>Colored rusty crimson by iron oxide dust, Mars boasts Olympus Mons—the largest volcano in the Solar System—and ancient river valleys hinting at a watery past.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Tallest Peak</span>
-            <span class="stat-value">21.9 km</span>
-          </div>
-          <div>
-            <span class="stat-label">Moons</span>
-            <span class="stat-value">2 (Phobos & Deimos)</span>
-          </div>
+          <div><span class="stat-label">Tallest Peak</span><span class="stat-value">21.9 km</span></div>
+          <div><span class="stat-label">Moons</span><span class="stat-value">2 (Phobos & Deimos)</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 5. Jupiter -->
-      <article class="planet-card" style="--glow-color: rgba(249,115,22,0.25); --tag-color: #fdba74;">
+      <a href="planet.html?planet=jupiter" class="planet-card" style="--glow-color: rgba(249,115,22,0.25); --tag-color: #fdba74;">
         <div class="planet-header">
           <span class="planet-order">05 • Gas Giant</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere jupiter"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere jupiter"></div></div>
         <h3>Jupiter</h3>
         <span class="planet-tagline">King of Planets</span>
         <p>More than twice as massive as all other planets combined. Its banded clouds swirl around the Great Red Spot, a colossal anticyclonic storm raging for centuries.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Day Length</span>
-            <span class="stat-value">9h 55m</span>
-          </div>
-          <div>
-            <span class="stat-label">Known Moons</span>
-            <span class="stat-value">95</span>
-          </div>
+          <div><span class="stat-label">Day Length</span><span class="stat-value">9h 55m</span></div>
+          <div><span class="stat-label">Known Moons</span><span class="stat-value">95</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 6. Saturn -->
-      <article class="planet-card" style="--glow-color: rgba(245,158,11,0.25); --tag-color: #fde68a;">
+      <a href="planet.html?planet=saturn" class="planet-card" style="--glow-color: rgba(245,158,11,0.25); --tag-color: #fde68a;">
         <div class="planet-header">
           <span class="planet-order">06 • Gas Giant</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere saturn"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere saturn"></div></div>
         <h3>Saturn</h3>
         <span class="planet-tagline">Jewel of the Ecliptic</span>
         <p>Adorned with a dazzling system of seven main rings composed of billions of ice and rock particles, Saturn is the only planet less dense than liquid water.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Ring Span</span>
-            <span class="stat-value">282,000 km</span>
-          </div>
-          <div>
-            <span class="stat-label">Known Moons</span>
-            <span class="stat-value">146</span>
-          </div>
+          <div><span class="stat-label">Ring Span</span><span class="stat-value">282,000 km</span></div>
+          <div><span class="stat-label">Known Moons</span><span class="stat-value">146</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 7. Uranus -->
-      <article class="planet-card" style="--glow-color: rgba(34,211,238,0.25); --tag-color: #67e8f9;">
+      <a href="planet.html?planet=uranus" class="planet-card" style="--glow-color: rgba(34,211,238,0.25); --tag-color: #67e8f9;">
         <div class="planet-header">
           <span class="planet-order">07 • Ice Giant</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere uranus"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere uranus"></div></div>
         <h3>Uranus</h3>
         <span class="planet-tagline">The Tilted World</span>
         <p>Rotating nearly on its side at a 98-degree axial tilt, this pale cyan ice giant experiences extreme 21-year-long seasons and the coldest planetary atmosphere in the system.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Axial Tilt</span>
-            <span class="stat-value">97.8°</span>
-          </div>
-          <div>
-            <span class="stat-label">Min Temp</span>
-            <span class="stat-value">-224°C</span>
-          </div>
+          <div><span class="stat-label">Axial Tilt</span><span class="stat-value">97.8°</span></div>
+          <div><span class="stat-label">Min Temp</span><span class="stat-value">-224°C</span></div>
         </div>
-      </article>
+      </a>
 
       <!-- 8. Neptune -->
-      <article class="planet-card" style="--glow-color: rgba(59,130,246,0.28); --tag-color: #93c5fd;">
+      <a href="planet.html?planet=neptune" class="planet-card" style="--glow-color: rgba(59,130,246,0.28); --tag-color: #93c5fd;">
         <div class="planet-header">
           <span class="planet-order">08 • Ice Giant</span>
+          <span class="explore-arrow">Explore →</span>
         </div>
-        <div class="planet-sphere-wrap">
-          <div class="sphere neptune"></div>
-        </div>
+        <div class="planet-sphere-wrap"><div class="sphere neptune"></div></div>
         <h3>Neptune</h3>
         <span class="planet-tagline">The Supersonic Blue</span>
         <p>The farthest major planet from the Sun, swept by supersonic methane winds roaring faster than 2,100 km/h—the fastest sustained winds anywhere in our Solar System.</p>
         <div class="planet-stats">
-          <div>
-            <span class="stat-label">Orbit Period</span>
-            <span class="stat-value">165 Earth Years</span>
-          </div>
-          <div>
-            <span class="stat-label">Wind Speed</span>
-            <span class="stat-value">2,100 km/h</span>
-          </div>
+          <div><span class="stat-label">Orbit Period</span><span class="stat-value">165 Earth Years</span></div>
+          <div><span class="stat-label">Wind Speed</span><span class="stat-value">2,100 km/h</span></div>
         </div>
-      </article>
+      </a>
     </section>
   </main>
 
   <footer>
     <span>SOLARIS • Interactive Planetary Showcase</span>
-    <span>Crafted with pure HTML, CSS & Vanilla JS</span>
+    <span>Click any planet to inspect its cosmic dossier</span>
   </footer>
 
   <script>
-    // Generate twinkling stars dynamically
     const starfield = document.getElementById('starfield');
-    const starCount = 130;
-
-    for (let i = 0; i < starCount; i++) {
+    for (let i = 0; i < 130; i++) {
       const star = document.createElement('div');
       star.classList.add('star');
       const size = Math.random() * 2.2 + 0.8;
-      star.style.width =
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+      star.style.setProperty('--opacity', `${Math.random() * 0.7 + 0.2}`);
+      starfield.appendChild(star);
+    }
+
+    const cards = document.querySelectorAll('.planet-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), index * 70);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    cards.forEach(card => observer.observe(card));
+  </script>
+</body>
+</html>
