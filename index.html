@@ -99,6 +99,12 @@
       box-shadow: 0 0 14px #f59e0b;
     }
 
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
     .nav-links {
       display: flex;
       gap: 2rem;
@@ -114,6 +120,33 @@
     }
 
     .nav-links a:hover { color: #fff; }
+
+    /* Floating Audio Button */
+    .audio-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .audio-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .audio-btn.playing {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
 
     /* Hero Section */
     .hero {
@@ -157,13 +190,13 @@
       color: var(--text-secondary);
       font-size: 1.1rem;
       max-width: 600px;
-      margin: 0 auto 1rem;
+      margin: 0 auto 0.75rem;
     }
 
     .hint-text {
       font-size: 0.85rem;
       color: #60a5fa;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       letter-spacing: 0.02em;
     }
 
@@ -179,7 +212,6 @@
       justify-content: center;
     }
 
-    /* Pause orbit when hovering a planet so it's easy to click */
     .orrery-wrapper:has(.planet-node:hover) .orbit {
       animation-play-state: paused;
     }
@@ -205,7 +237,7 @@
       border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 50%;
       animation: spinOrbit linear infinite;
-      pointer-events: none; /* Let clicks pass through ring to inner planets */
+      pointer-events: none;
       transition: border-color 0.25s ease;
     }
 
@@ -213,7 +245,6 @@
       border-color: rgba(255, 255, 255, 0.4);
     }
 
-    /* Clickable Planet Node on the Orbit */
     .planet-node {
       position: absolute;
       top: 50%;
@@ -227,7 +258,6 @@
       z-index: 15;
     }
 
-    /* Invisible bigger hit-area so small planets are super easy to click */
     .planet-node::before {
       content: '';
       position: absolute;
@@ -235,7 +265,6 @@
       border-radius: 50%;
     }
 
-    /* Hover Tooltip showing planet name */
     .planet-node::after {
       content: attr(data-name);
       position: absolute;
@@ -263,10 +292,9 @@
 
     .planet-node:hover::after {
       opacity: 1;
-      transform: translateX(-50%) scale(0.65); /* Counter-scale so tooltip stays crisp */
+      transform: translateX(-50%) scale(0.65);
     }
 
-    /* Orbit sizes & planet styles */
     .orbit-mercury { width: 90px; height: 90px; animation-duration: 7s; z-index: 9; }
     .node-mercury { width: 8px; height: 8px; background: #a8a29e; box-shadow: 0 0 8px #a8a29e; }
 
@@ -535,10 +563,15 @@
       <span class="logo-sun"></span>
       SOLARIS
     </a>
-    <ul class="nav-links">
-      <li><a href="#orrery">Live Orbit</a></li>
-      <li><a href="#planets">The 8 Worlds</a></li>
-    </ul>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#orrery">Live Orbit</a></li>
+        <li><a href="#planets">The 8 Worlds</a></li>
+      </ul>
+      <button id="audio-toggle" class="audio-btn" aria-label="Toggle ambient space sound">
+        <span>🎵 Sound: Off</span>
+      </button>
+    </div>
   </nav>
 
   <main>
@@ -546,40 +579,32 @@
       <div class="badge">✦ Cosmic Atlas • 4.6 Billion Years Old</div>
       <h1>Explore Our<br><span class="gradient-text">Solar System</span></h1>
       <p>Eight unique worlds bound by the gravity of a single star. Hover over any orbiting planet to pause its path and click to enter its full dossier.</p>
-      <div class="hint-text">✨ Tip: Click any orbiting planet below to explore its deep-dive page</div>
+      <div class="hint-text">✨ Tip: Click any orbiting planet below or explore cards to open its deep-dive page</div>
 
-      <!-- Interactive Animated Orrery -->
       <div class="orrery-wrapper" aria-label="Interactive Solar System Orbits">
         <div class="sun-core" title="The Sun"></div>
 
         <div class="orbit orbit-mercury">
           <a href="planet.html?planet=mercury" class="planet-node node-mercury" data-name="Mercury →" aria-label="Explore Mercury"></a>
         </div>
-
         <div class="orbit orbit-venus">
           <a href="planet.html?planet=venus" class="planet-node node-venus" data-name="Venus →" aria-label="Explore Venus"></a>
         </div>
-
         <div class="orbit orbit-earth">
           <a href="planet.html?planet=earth" class="planet-node node-earth" data-name="Earth →" aria-label="Explore Earth"></a>
         </div>
-
         <div class="orbit orbit-mars">
           <a href="planet.html?planet=mars" class="planet-node node-mars" data-name="Mars →" aria-label="Explore Mars"></a>
         </div>
-
         <div class="orbit orbit-jupiter">
           <a href="planet.html?planet=jupiter" class="planet-node node-jupiter" data-name="Jupiter →" aria-label="Explore Jupiter"></a>
         </div>
-
         <div class="orbit orbit-saturn">
           <a href="planet.html?planet=saturn" class="planet-node node-saturn" data-name="Saturn →" aria-label="Explore Saturn"></a>
         </div>
-
         <div class="orbit orbit-uranus">
           <a href="planet.html?planet=uranus" class="planet-node node-uranus" data-name="Uranus →" aria-label="Explore Uranus"></a>
         </div>
-
         <div class="orbit orbit-neptune">
           <a href="planet.html?planet=neptune" class="planet-node node-neptune" data-name="Neptune →" aria-label="Explore Neptune"></a>
         </div>
@@ -590,7 +615,7 @@
       <div>
         <h2>Planetary Profiles</h2>
       </div>
-      <p>Select any planet card or orbiting world to inspect its atmosphere, moons, and fascinating cosmic facts.</p>
+      <p>Select any planet card to inspect its atmosphere, moons, and fascinating cosmic facts.</p>
     </div>
 
     <section class="planets-grid">
@@ -730,6 +755,7 @@
   </footer>
 
   <script>
+    // Twinkling Starfield Generator
     const starfield = document.getElementById('starfield');
     for (let i = 0; i < 130; i++) {
       const star = document.createElement('div');
@@ -744,6 +770,7 @@
       starfield.appendChild(star);
     }
 
+    // Scroll Observer for Cards
     const cards = document.querySelectorAll('.planet-card');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry, index) => {
@@ -753,8 +780,74 @@
         }
       });
     }, { threshold: 0.12 });
-
     cards.forEach(card => observer.observe(card));
+
+    // Built-in Web Audio API Ambient Space Synthesizer (No MP3 file required!)
+    const audioToggle = document.getElementById('audio-toggle');
+    let audioCtx = null;
+    let masterGain = null;
+    let isPlaying = false;
+
+    function initSpacePad() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(340, audioCtx.currentTime);
+
+      filter.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+
+      // Deep cosmic chord frequencies
+      const frequencies = [73.42, 110.00, 164.81, 185.00, 110.4];
+
+      frequencies.forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const oscGain = audioCtx.createGain();
+
+        osc.type = index % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        oscGain.gain.setValueAtTime(index === 0 ? 0.25 : 0.12, audioCtx.currentTime);
+
+        osc.connect(oscGain);
+        oscGain.connect(filter);
+        osc.start();
+      });
+    }
+
+    audioToggle.addEventListener('click', () => {
+      if (!audioCtx) {
+        initSpacePad();
+      }
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const now = audioCtx.currentTime;
+
+      if (!isPlaying) {
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.35, now + 1.5);
+
+        isPlaying = true;
+        audioToggle.classList.add('playing');
+        audioToggle.querySelector('span').textContent = '🔊 Sound: On';
+      } else {
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+        isPlaying = false;
+        audioToggle.classList.remove('playing');
+        audioToggle.querySelector('span').textContent = '🎵 Sound: Off';
+      }
+    });
   </script>
 </body>
 </html>
